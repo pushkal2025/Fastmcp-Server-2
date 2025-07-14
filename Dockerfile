@@ -1,43 +1,48 @@
+
 # Use the official Python slim image
 FROM python:3.13-slim
 
-# Install system packages
-RUN apt-get update && apt-get install -y curl gnupg \
+# ──────────────────────────────────────────────
+# 1. Install system dependencies
+# ──────────────────────────────────────────────
+RUN apt-get update && apt-get install -y \
+    nginx curl gnupg bash \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install uv
+# ──────────────────────────────────────────────
+# 2. Install uv (for Python deps and mcp)
+# ──────────────────────────────────────────────
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
+# ──────────────────────────────────────────────
+# 3. Set work directory
+# ──────────────────────────────────────────────
 WORKDIR /app
 
-# Install the project into /app
-
-# Copy entire project
+# ──────────────────────────────────────────────
+# 4. Copy project files
+# ──────────────────────────────────────────────
 COPY . .
 
-
-# Allow statements and log messages to immediately appear in the logs
-ENV PYTHONUNBUFFERED=1
-
-
-# Ensure logging directory exists
-RUN mkdir -p logging
-
-
-# Install Python dependencies
+# ──────────────────────────────────────────────
+# 5. Install Python dependencies via uv
+# ──────────────────────────────────────────────
 RUN uv sync
 
-# RUN pip install fastmcp
-
-# Install current project in editable mode
-# RUN uv pip install -e .
-
-# Entrypoint script permissions
+# ──────────────────────────────────────────────
+# 6. Ensure logging and executable scripts
+# ──────────────────────────────────────────────
+RUN mkdir -p logging
 RUN chmod +x entrypoint.sh
 
-# Expose ports
-EXPOSE 8080  8000 
+# ──────────────────────────────────────────────
+# 7. Expose only nginx reverse proxy port
+# ──────────────────────────────────────────────
+EXPOSE 80
 
+# ──────────────────────────────────────────────
+# 8. Start everything via entrypoint.sh
+# ──────────────────────────────────────────────
 CMD ["./entrypoint.sh"]
