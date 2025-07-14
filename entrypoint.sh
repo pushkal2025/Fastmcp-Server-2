@@ -32,7 +32,20 @@ uvx mcp-atlassian \
   --port 8000 &
 
 # ─────────────────────────────────────────────
-# 4. Start nginx reverse proxy
+# 4. Wait for both MCPs to be ready
+# ─────────────────────────────────────────────
+echo "⏳ Waiting for FastMCP to be ready..."
+until curl -s http://localhost:8080/health > /dev/null; do
+  sleep 5
+done
+
+echo "⏳ Waiting for Jira MCP to be ready..."
+until curl -s http://localhost:8000/mcp > /dev/null; do
+  sleep 5
+done
+
+# ─────────────────────────────────────────────
+# 5. Start nginx reverse proxy
 # ─────────────────────────────────────────────
 echo "🌐 Starting Nginx reverse proxy..."
 nginx -c /app/nginx.conf -g "daemon off;"
