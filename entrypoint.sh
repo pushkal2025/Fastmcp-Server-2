@@ -29,7 +29,7 @@ uvx mcp-atlassian \
   --jira-token "$JIRA_API_KEY" \
   --transport streamable-http \
   --host 0.0.0.0 \
-  --port 8000 &
+  --port 8000
 
 # ─────────────────────────────────────────────
 # 4. Wait for both MCPs to be ready
