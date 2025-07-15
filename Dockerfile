@@ -40,7 +40,7 @@ RUN chmod +x entrypoint.sh
 # ──────────────────────────────────────────────
 # 7. Expose only nginx reverse proxy port
 # ──────────────────────────────────────────────
-EXPOSE 80
+EXPOSE 8000
 
 # ──────────────────────────────────────────────
 # 8. Start everything via entrypoint.sh
